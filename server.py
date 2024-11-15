@@ -1,31 +1,20 @@
-import pexpect
-import os
+import subprocess
 
-# 禁用分页器
-os.environ['PAGER'] = ''
-
-DB_NAME = "tech_demo"
-DB_USER = "wym"
-DB_HOST = "127.0.0.1"
-DB_PORT = "5432"
-SQL_FILE = "/home/wym/HELMDB_dest/bin/show_sql/show.sql"
-PASSWORD = "wym_123456"
-
-command = "/home/wym/HELMDB_dest/bin/gsql -d {} -U {} -h {} -p {} -f {}".format(
-    DB_NAME, DB_USER, DB_HOST, DB_PORT, SQL_FILE
-)
+# 定义命令
+command = "/home/wym/HELMDB_dest/bin/gsql -U wym -d tech_demo -p 5432 -f /home/wym/HELMDB_dest/bin/show_sql/show.sql"
 
 try:
-    child = pexpect.spawn(command, encoding='utf-8')
-    child.expect("Password for user", timeout=30) 
 
-    child.sendline(PASSWORD)
+    # 执行第二条命令
+    result = subprocess.run(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    while True:
-        line = child.readline() 
-        if not line:
-            break
-        print(line, end="")
+    # 检查输出
+    if result.returncode == 0:
+        print("查询成功，输出如下：")
+        print(result.stdout)
+    else:
+        print("查询失败，错误信息如下：")
+        print(result.stderr)
 
-except pexpect.exceptions.ExceptionPexpect as e:
-    print("运行失败：", str(e))
+except subprocess.CalledProcessError as e:
+    print(f"命令执行失败：{e}")
