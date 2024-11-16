@@ -84,3 +84,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+#app {
+  /* 自动充满整个高度 */
+  height: 100vh;
+}
