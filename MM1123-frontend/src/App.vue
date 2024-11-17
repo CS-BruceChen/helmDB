@@ -1,6 +1,5 @@
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
 import SqlEditor from '@/views/sql-editor/index.vue'
 import VectorCanvas from '@/views/vector-canvas/index.vue'
 import RelationTerminal from '@/views/relation-terminal/index.vue'
@@ -32,6 +31,8 @@ main {
 .sql-container {
   flex: 1;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .res-container {
