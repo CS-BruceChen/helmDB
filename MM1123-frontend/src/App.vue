@@ -1,14 +1,23 @@
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router'
 // import HelloWorld from './components/HelloWorld.vue'
+import SqlEditor from '@/views/sql-editor/index.vue'
+import VectorCanvas from '@/views/vector-canvas/index.vue'
+import RelationTerminal from '@/views/relation-terminal/index.vue'
 </script>
 
 <template>
   <main>
-    <div class="sql-container">div1</div>
+    <div class="sql-container">
+      <SqlEditor />
+    </div>
     <div class="res-container">
-      <div class="vector-canvas">div2</div>
-      <div class="relation-terminal">div3</div>
+      <div class="vector-canvas">
+        <VectorCanvas />
+      </div>
+      <div class="relation-terminal">
+        <RelationTerminal />
+      </div>
     </div>
   </main>
 </template>
