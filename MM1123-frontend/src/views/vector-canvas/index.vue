@@ -6,6 +6,7 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { getPoints } from './visualization/points';
 
 const threeContainer = ref(null);
 
@@ -29,7 +30,7 @@ function init() {
   const wd = threeContainer.value.clientWidth;
   const ht = threeContainer.value.clientHeight;
   camera = new THREE.PerspectiveCamera(75, wd / ht, 0.1, 1000);
-  camera.position.z = 50;
+  camera.position.z = 2;
 
   // 设置渲染器
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -39,16 +40,14 @@ function init() {
 
   // 创建点的几何体和材质
   pointGeometry = new THREE.BufferGeometry();
-  const positions = new Float32Array([
-    // x, y, z
-    10, 10, 0,
-    -10, -10, 0,
-    10, -10, 0,
-    // ... 更多点
-  ]);
+  const positions = getPoints();
   pointGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-  pointMaterial = new THREE.PointsMaterial({ color: 0x00ff00 });
+  pointMaterial = new THREE.PointsMaterial({
+    color: 0x00ff00,
+    size: 2,
+    sizeAttenuation: false // 关闭点大小的衰减，使得点的大小不受相机远近的影响
+  });
 
   // 创建点
   points = new THREE.Points(pointGeometry, pointMaterial);
