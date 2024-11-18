@@ -3,12 +3,14 @@
 </template>
 
 <script setup lang="js">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { getPoints } from './visualization/points';
+import { executionStore } from '@/stores';
 
 const threeContainer = ref(null);
+const execution = executionStore();
 
 let scene, camera, renderer, pointGeometry, pointMaterial, points, controls;
 
@@ -71,6 +73,40 @@ function animate() {
 
   renderer.render(scene, camera);
 }
+
+// 存储上一次的结果
+let resultPointsObject, resultGeometry, resultMaterial;
+// 监听executionStore.status的变化,
+watch(() => execution.status, (newStatus) => {
+  if (newStatus === 'finished') {
+    // 如果上一次结果不为空，先移除
+    if (resultPointsObject !== undefined) {
+      scene.remove(resultPointsObject);
+    }
+    console.log('Query Results: ', execution.currResult);
+    // 在points中找到对应位置的点
+    const resultIDs = execution.currResult;
+    const positions = pointGeometry.attributes.position.array;
+    const resultPoints = [];
+    for (let i = 0; i < resultIDs.length; i++) {
+      const index = (resultIDs[i] - 1) * 3; // 每个点有三个坐标，并且id比index大1
+      const x = positions[index];
+      const y = positions[index + 1];
+      const z = positions[index + 2];
+      resultPoints.push(new THREE.Vector3(x, y, z));
+    }
+
+    // 绘制resultPoints，颜色为红色，点大小为5
+    resultGeometry = new THREE.BufferGeometry().setFromPoints(resultPoints);
+    resultMaterial = new THREE.PointsMaterial({
+      color: 0xff0000,
+      size: 10,
+      sizeAttenuation: false // 关闭点大小的衰减，使得点的大小不受相机远近的影响
+    });
+    resultPointsObject = new THREE.Points(resultGeometry, resultMaterial);
+    scene.add(resultPointsObject);
+  }
+}, { immediate: true });
 </script>
 
 <style scoped>

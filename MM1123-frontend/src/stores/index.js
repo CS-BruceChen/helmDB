@@ -8,6 +8,7 @@ export const executionStore = defineStore('execution', {
       time: 0,
       status: 'beforeStart',
       currSQL: '',
+      currResult: [],
     }
   },
   actions: {
