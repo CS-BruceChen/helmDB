@@ -6,13 +6,17 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { getPoints } from './visualization/points';
+import { getAllPoints } from './visualization/points';
+import { getEdge } from './visualization/edges';
 import { executionStore } from '@/stores';
 
 const threeContainer = ref(null);
 const execution = executionStore();
 
-let scene, camera, renderer, pointGeometry, pointMaterial, points, controls;
+let scene, camera, renderer;
+let pointGeometry, pointMaterial, points;
+let linesGeometry, linesMaterial, lines;
+let controls;
 
 onMounted(() => {
   init();
@@ -42,19 +46,34 @@ function init() {
 
   // 创建点的几何体和材质
   pointGeometry = new THREE.BufferGeometry();
-  const positions = getPoints();
+  const positions = getAllPoints();
   pointGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
   pointMaterial = new THREE.PointsMaterial({
     color: 0x00ff00,
     size: 2,
-    sizeAttenuation: false // 关闭点大小的衰减，使得点的大小不受相机远近的影响
+    sizeAttenuation: false, // 关闭点大小的衰减，使得点的大小不受相机远近的影响
+    transparent: true, // 开启透明度
+    opacity: 0.5, // 设置点的透明度为 0.5
   });
 
   // 创建点
   points = new THREE.Points(pointGeometry, pointMaterial);
   scene.add(points);
 
+  // // 创建边的几何体和材质
+  // linesGeometry = new THREE.BufferGeometry();
+  // const edges = getAllEdges();
+  // linesGeometry.setAttribute('position', new THREE.BufferAttribute(edges, 3));
+  // linesMaterial = new THREE.LineBasicMaterial({
+  //   color: 0x0000ff,
+  //   linewidth: 1,
+  //   transparent: true, // 开启透明度
+  //   opacity: 0.5, // 设置边的透明度为 0.5
+  // });
+  // // 创建边
+  // lines = new THREE.LineSegments(linesGeometry, linesMaterial);
+  // scene.add(lines);
 
   // 创建轨道控制器
   controls = new OrbitControls(camera, renderer.domElement);

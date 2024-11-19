@@ -1,6 +1,6 @@
 import rawData from '@/data/TestSet_projection.json'
 
-export function getPoints() {
+export function getAllPoints() {
     let points=[]
     for (let i = 0; i < rawData.length; i++) {
         let x = rawData[i]["3DProjection"][0][0];
