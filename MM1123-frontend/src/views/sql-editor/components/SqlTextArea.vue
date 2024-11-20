@@ -54,8 +54,6 @@ ORDER BY emd <-> (
 )
 limit 5`
 
-const testSQL="SELECT * FROM pg_user"
-
 // 组件挂载后创建编辑器实例
 onMounted(() => {
   initAutoCompletion()

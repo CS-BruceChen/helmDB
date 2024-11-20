@@ -14,9 +14,31 @@
         Export
       </a-button>
       <a-button>
-        <FormatPainterOutlined />
-        Format
+        <SaveOutlined />
+        Save
       </a-button>
+      <a-dropdown :trigger="['click']">
+        <template #overlay>
+          <a-menu @click="handleMenuClick">
+            <a-menu-item key="1">
+              <UserOutlined />
+              1st menu item
+            </a-menu-item>
+            <a-menu-item key="2">
+              <UserOutlined />
+              2nd menu item
+            </a-menu-item>
+            <a-menu-item key="3">
+              <UserOutlined />
+              3rd item
+            </a-menu-item>
+          </a-menu>
+        </template>
+        <a-button>
+          Saved SQL
+          <DownOutlined />
+        </a-button>
+      </a-dropdown>
     </a-space>
     <a-tag :color="tagColor" style="line-height: 32px;">
       <component :is="currentIcon" :spin="tagSpinning" />
@@ -26,7 +48,7 @@
 </template>
 
 <script lang="js" setup>
-import { PlayCircleFilled, ImportOutlined, ExportOutlined, FormatPainterOutlined, SyncOutlined, CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
+import { PlayCircleFilled, ImportOutlined, ExportOutlined, SaveOutlined,DownOutlined, SyncOutlined, CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import { executionStore } from '@/stores';
 import { ref, watch } from 'vue';
 import { executeSQL } from '@/api';
@@ -34,8 +56,8 @@ const execution = executionStore();
 
 watch(
   () => execution.status,
-  (newStatus,oldStatus) => {
-    if (newStatus === 'running' && oldStatus !== 'running'){
+  (newStatus, oldStatus) => {
+    if (newStatus === 'running' && oldStatus !== 'running') {
       executeSQL(execution)
     }
   }
