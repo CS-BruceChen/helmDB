@@ -1,25 +1,10 @@
 // @/api/index.js
 import { ref } from 'vue';
-import { executionStore } from '@/stores';
 // 创建一个响应式引用来存储响应数据
 const response = ref(null);
-const execution = executionStore();
-
-// function run() {
-//     execution.start();
-//     // 执行executeSQL函数，执行完之后再调用execution.finish()
-//     executeSQL(execution.currSQL).then(() => {
-//       execution.finish();
-//     });
-
-//     // executeSQL(execution.currSQL);
-//     // execution.finish();
-//     //设置execution.currResult为2-22000之间的随机整数数组，长度在5-10之间
-//     execution.currResult = Array.from({ length: Math.floor(Math.random() * 5) + 5 }, () => Math.floor(Math.random() * 20000) + 2);
-//   }
 
 // 定义executeSQL函数
-const executeSQL = async (sqlStr) => {
+const executeSQL = async (execution) => {
     execution.start();
     try {
         // 使用fetch发送POST请求
@@ -28,7 +13,7 @@ const executeSQL = async (sqlStr) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ sql: sqlStr })
+            body: JSON.stringify({ sql: execution.currSQL })
         });
 
         if (result.ok) {

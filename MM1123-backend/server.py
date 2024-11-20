@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import subprocess
 import os
 import re
 
 app = Flask(__name__)
+CORS(app)  # 这将允许所有域名进行跨域请求
 
 # 定义 SQL 文件路径
 SQL_FILE_PATH = "/home/wym/HELMDB_dest/bin/show_sql/show.sql"
