@@ -1,5 +1,5 @@
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import rawData from '@/data/TestSet_projection.json'
 
 export const executionStore = defineStore('execution', {
   state: () => {
@@ -25,10 +25,17 @@ export const executionStore = defineStore('execution', {
       this.status = 'finished'
       this.time = new Date().getTime() - this.time
       this.currQueryReturns = returnedData;
-      this.currResult = Array.from(
-        { length: Math.floor(Math.random() * 5) + 5 },
-        () => Math.floor(Math.random() * 20000) + 2
-      );
+      if (returnedData.status === 'success') {
+        // 从returnedData.data中提取每个对象的id属性
+        this.currResult = returnedData.data.map(obj => obj.id);
+        // 根据id数组，从rawData数组中提取对应位置的对象
+        this.currQueryReturns = {
+          status: 'success',
+          data: this.currResult.map(id => rawData[id])
+        }
+      } else {
+        this.currResult = []
+      }
     },
     err() {
       this.status = 'error'
