@@ -17,7 +17,7 @@ export const executionStore = defineStore('execution', {
       this.counter++
       this.time = new Date().getTime()
     },
-    run(sqlStr){
+    run(sqlStr) {
       this.status = 'running'
       this.currSQL = sqlStr
     },
@@ -26,8 +26,8 @@ export const executionStore = defineStore('execution', {
       this.time = new Date().getTime() - this.time
       this.currQueryReturns = returnedData;
       this.currResult = Array.from(
-          { length: Math.floor(Math.random() * 5) + 5 },
-          () => Math.floor(Math.random() * 20000) + 2
+        { length: Math.floor(Math.random() * 5) + 5 },
+        () => Math.floor(Math.random() * 20000) + 2
       );
     },
     err() {

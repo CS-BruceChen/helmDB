@@ -34,25 +34,25 @@ const theme = 'vs-light'
 
 const exampleSQL = `WITH target_publication as 
 (
-  SELECT * 
-  FROM articles 
-  WHERE article_id = '53e99784b7602d9701f3e151'
+SELECT * 
+FROM articles 
+WHERE article_id = '53e99784b7602d9701f3e151'
 ),
 A as 
 (
-  SELECT p2._id AS id
-  FROM citation_network
-  MATCH {(p1: publication)-[c: cites]->(p2: publication)}
-  WHERE p1._id in (select article_id from target_publication)
+SELECT p2._id AS id
+FROM citation_network
+MATCH {(p1: publication)-[c: cites]->(p2: publication)}
+WHERE p1._id in (select article_id from target_publication)
 )
-SELECT id,pub_year,authors, 
-from articles 
+SELECT id,pub_year,authors
+from articles
 WHERE pub_year <= 1990 
 and article_id in (select id from A)
 ORDER BY emd <-> (
   select emd from target_publication
 )
-limit 5;`
+limit 5`
 
 const testSQL="SELECT * FROM pg_user"
 
@@ -60,7 +60,7 @@ const testSQL="SELECT * FROM pg_user"
 onMounted(() => {
   initAutoCompletion()
   editor = monaco.editor.create(document.getElementById('monacoEditor'), {
-    value: testSQL,//exampleSQL,
+    value: exampleSQL,
     language: 'sql',
     readOnly: false,
     automaticLayout: true,
