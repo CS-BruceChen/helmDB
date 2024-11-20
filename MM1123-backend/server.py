@@ -3,6 +3,7 @@ from flask_cors import CORS
 import subprocess
 import os
 import re
+import json
 
 app = Flask(__name__)
 CORS(app)  # 这将允许所有域名进行跨域请求
@@ -33,13 +34,20 @@ def execute_sql_file(skip_lines=0):
             match = re.search(r"\[.*\]", cleaned_output)
             if match:
                 jsonstr=match.group(0)
-                return jsonstr  # 返回匹配到的 JSON 对象
+                try:
+                    # 使用json.loads将JSON字符串转换为字典
+                    data_dict = json.loads(jsonstr)
+                    return {"status": "success", "data": data_dict}
+                except json.JSONDecodeError as e:
+                    # 如果jsonstr不是有效的JSON字符串，将引发JSONDecodeError异常
+                    return {"status": "error", "output": "无效的JSON格式", "error": str(e)}
             else:
-                raise ValueError("未找到 JSON 对象")
+                # 如果没有找到JSON对象，返回错误信息
+                return {"status": "error", "output": result.stdout, "error": result.stderr}
         else:
-            return {"status": "error", "output": result.stderr}
+            return {"status": "error", "output": result.stderr, "error": "命令执行错误"}
     except Exception as e:
-        return {"status": "error", "output": str(e)}
+        return {"status": "error", "output": str(e), "error":"未知的内部错误"}
 
 
 @app.route('/execute', methods=['POST'])
