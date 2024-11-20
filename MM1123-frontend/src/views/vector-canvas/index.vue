@@ -1,5 +1,10 @@
 <template>
-  <div ref="threeContainer" class="threeCanvas"></div>
+  <div ref="threeContainer" class="threeCanvas">
+    <div class="tips">
+      <div class="tips-title">Vector Space</div>
+      <div class="tips-desc">Drag to rotate, hold ctrl and drag to pan</div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="js">
@@ -66,6 +71,7 @@ function init() {
   controls.dampingFactor = 0.25; // 阻尼系数
   controls.enableZoom = true; // 启用缩放
   controls.zoomSpeed = 1.0; // 缩放速度
+  controls.enablePan=true;
 
 }
 
@@ -82,6 +88,7 @@ function animate() {
 // 存储上一次的结果
 let resultPointsObject, resultGeometry, resultMaterial;
 let linesGeometry, linesMaterial, lines;
+let citedPointsObject, citedGeometry, citedMaterial;
 // 监听executionStore.status的变化,
 watch(() => execution.status, (newStatus) => {
   if (newStatus === 'finished') {
@@ -89,8 +96,11 @@ watch(() => execution.status, (newStatus) => {
     if (resultPointsObject !== undefined) {
       scene.remove(resultPointsObject);
     }
-    if (lines!== undefined) {
+    if (lines !== undefined) {
       scene.remove(lines);
+    }
+    if (citedPointsObject !== undefined) {
+      scene.remove(citedPointsObject);
     }
     // console.log('Query Results: ', execution.currResult);
     // 在points中找到对应位置的点
@@ -100,32 +110,32 @@ watch(() => execution.status, (newStatus) => {
   }
 }, { immediate: true });
 
-function addPoints(resultIDs){
+function addPoints(resultIDs) {
   const positions = pointGeometry.attributes.position.array;
-    const resultPoints = [];
-    for (let i = 0; i < resultIDs.length; i++) {
-      const index = (resultIDs[i] - 1) * 3; // 每个点有三个坐标，并且id比index大1
-      const x = positions[index];
-      const y = positions[index + 1];
-      const z = positions[index + 2];
-      resultPoints.push(new THREE.Vector3(x, y, z));
-    }
+  const resultPoints = [];
+  for (let i = 0; i < resultIDs.length; i++) {
+    const index = (resultIDs[i] - 1) * 3; // 每个点有三个坐标，并且id比index大1
+    const x = positions[index];
+    const y = positions[index + 1];
+    const z = positions[index + 2];
+    resultPoints.push(new THREE.Vector3(x, y, z));
+  }
 
-    // 绘制resultPoints，颜色为红色，点大小为5
-    resultGeometry = new THREE.BufferGeometry().setFromPoints(resultPoints);
-    resultMaterial = new THREE.PointsMaterial({
-      color: 0xff0000,
-      size: 10,
-      sizeAttenuation: false // 关闭点大小的衰减，使得点的大小不受相机远近的影响
-    });
-    resultPointsObject = new THREE.Points(resultGeometry, resultMaterial);
-    scene.add(resultPointsObject);
+  // 绘制resultPoints，颜色为红色，点大小为5
+  resultGeometry = new THREE.BufferGeometry().setFromPoints(resultPoints);
+  resultMaterial = new THREE.PointsMaterial({
+    color: 0xff0000,
+    size: 4,
+    sizeAttenuation: false // 关闭点大小的衰减，使得点的大小不受相机远近的影响
+  });
+  resultPointsObject = new THREE.Points(resultGeometry, resultMaterial);
+  scene.add(resultPointsObject);
 }
 
-function addLines(resultIDs){
+function addLines(resultIDs) {
   // // 创建边的几何体和材质
   linesGeometry = new THREE.BufferGeometry();
-  const edges = getEdges(resultIDs);
+  const [edges, citedPoints] = getEdges(resultIDs);
   linesGeometry.setAttribute('position', new THREE.BufferAttribute(edges, 3));
   linesMaterial = new THREE.LineBasicMaterial({
     color: 0x0000ff,
@@ -136,7 +146,18 @@ function addLines(resultIDs){
   // 创建边
   lines = new THREE.LineSegments(linesGeometry, linesMaterial);
   scene.add(lines);
+
+  citedGeometry = new THREE.BufferGeometry();
+  citedGeometry.setAttribute('position', new THREE.BufferAttribute(citedPoints, 3));
+  citedMaterial = new THREE.PointsMaterial({
+    color: 0x0000ff,
+    size: 3,
+    sizeAttenuation: false // 关闭点大小的衰减，使得点的大小不受相机远近的影响
+  });
+  citedPointsObject = new THREE.Points(citedGeometry, citedMaterial);
+  scene.add(citedPointsObject);
 }
+
 </script>
 
 <style scoped>
@@ -144,14 +165,37 @@ function addLines(resultIDs){
 .threeCanvas {
   width: 100%;
   height: 100%;
+  position: relative;
 }
-.threeCanvas::before {
-  content: "Vector Space"; /* 指定要显示的文本 */
+
+/* .threeCanvas::before {
+  content: "Vector Space";
   position: absolute;
   right: 1%;
   font-family: "Kanit", sans-serif;
   font-weight: 500;
   font-style: italic;
   font-size: 48px;
+} */
+
+.tips {
+  position: absolute;
+  top: 1%;
+  right: 1%;
+}
+
+.tips-title {
+  font-family: "Kanit", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 48px;
+}
+
+.tips-desc {
+  font-family: "Kanit", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 16px;
+  opacity: 0.5;
 }
 </style>

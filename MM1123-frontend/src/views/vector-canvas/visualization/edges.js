@@ -31,6 +31,7 @@ export function getAllEdges() {
 
 export function getEdges(resultIDs){
     let lines=[]
+    let endPoints = [];
     let currLineNum = 0;
     for (let i = 0; i < resultIDs.length; i++){
         let startID = resultIDs[i];
@@ -46,9 +47,11 @@ export function getEdges(resultIDs){
             let endY = rawData[endIndex]["3DProjection"][0][1];
             let endZ = rawData[endIndex]["3DProjection"][0][2];
             lines.push(startX,startY,startZ,endX,endY,endZ);
+            endPoints.push(endX,endY,endZ);
             currLineNum++;
         }
     }
     let linesArray = new Float32Array(lines);
-    return linesArray;
+    let endPointsArray = new Float32Array(endPoints);
+    return [linesArray,endPointsArray];
 }
