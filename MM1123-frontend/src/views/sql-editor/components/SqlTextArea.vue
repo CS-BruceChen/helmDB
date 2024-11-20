@@ -54,11 +54,13 @@ ORDER BY emd <-> (
 )
 limit 5;`
 
+const testSQL="SELECT * FROM pg_user"
+
 // 组件挂载后创建编辑器实例
 onMounted(() => {
   initAutoCompletion()
   editor = monaco.editor.create(document.getElementById('monacoEditor'), {
-    value: exampleSQL,
+    value: testSQL,//exampleSQL,
     language: 'sql',
     readOnly: false,
     automaticLayout: true,
@@ -165,7 +167,7 @@ const execution = executionStore()
 watch(
   () => execution.counter,
   () => {
-    execution.currSQL = getValue()
+    execution.run(getValue())
     console.log(execution.currSQL)
   }
 )
