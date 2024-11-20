@@ -31,7 +31,13 @@ export const executionStore = defineStore('execution', {
         // 根据id数组，从rawData数组中提取对应位置的对象
         this.currQueryReturns = {
           status: 'success',
-          data: this.currResult.map(id => rawData[id])
+          data: this.currResult.map(id => {
+            const item = rawData[id - 1];
+            // 创建item的浅拷贝
+            const copiedItem = Object.assign({}, item);
+            delete copiedItem['3DProjection'];
+            return copiedItem;
+          })
         }
       } else {
         this.currResult = []

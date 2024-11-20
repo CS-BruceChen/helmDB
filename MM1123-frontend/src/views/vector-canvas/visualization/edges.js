@@ -1,6 +1,6 @@
 import rawData from '@/data/TestSet_projection.json'
 import rawEdge from '@/data/edge.json'
-
+import adjList from '@/data/adjacency_list.json'
 export function getAllEdges() {
     let linesArray = new Float32Array(rawEdge.length * 6);
 
@@ -29,21 +29,26 @@ export function getAllEdges() {
     return linesArray;
 }
 
-export function getEdge(startID,endID){
-    let linesArray = new Float32Array(6);
-    let startIndex = startID-1;
-    let endIndex = endID-1;
-    let startX = rawData[startIndex]["3DProjection"][0][0];
-    let startY = rawData[startIndex]["3DProjection"][0][1];
-    let startZ = rawData[startIndex]["3DProjection"][0][2];
-    let endX = rawData[endIndex]["3DProjection"][0][0];
-    let endY = rawData[endIndex]["3DProjection"][0][1];
-    let endZ = rawData[endIndex]["3DProjection"][0][2];
-    linesArray[0] = startX;
-    linesArray[1] = startY;
-    linesArray[2] = startZ;
-    linesArray[3] = endX;
-    linesArray[4] = endY;
-    linesArray[5] = endZ;
+export function getEdges(resultIDs){
+    let lines=[]
+    let currLineNum = 0;
+    for (let i = 0; i < resultIDs.length; i++){
+        let startID = resultIDs[i];
+        let endIDs = adjList[startID];
+        for (let j = 0; j < endIDs.length; j++){
+            let endID = endIDs[j];
+            let endIndex = endID-1;
+            let startIndex = startID-1;
+            let startX = rawData[startIndex]["3DProjection"][0][0];
+            let startY = rawData[startIndex]["3DProjection"][0][1];
+            let startZ = rawData[startIndex]["3DProjection"][0][2];
+            let endX = rawData[endIndex]["3DProjection"][0][0];
+            let endY = rawData[endIndex]["3DProjection"][0][1];
+            let endZ = rawData[endIndex]["3DProjection"][0][2];
+            lines.push(startX,startY,startZ,endX,endY,endZ);
+            currLineNum++;
+        }
+    }
+    let linesArray = new Float32Array(lines);
     return linesArray;
 }
