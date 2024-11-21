@@ -4,10 +4,17 @@
       <div class="tips-title">Vector Space</div>
       <div class="tips-desc">Drag to rotate, hold ctrl and drag to pan</div>
     </div>
+    <div class="visible-control">
+      <a-button shape="circle" @click="handleVisible">
+        <EyeInvisibleOutlined v-if="isVisible" />
+        <EyeOutlined v-else />
+      </a-button>
+    </div>
   </div>
 </template>
 
 <script setup lang="js">
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons-vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -17,6 +24,7 @@ import { executionStore } from '@/stores';
 
 const threeContainer = ref(null);
 const execution = executionStore();
+const isVisible = ref(true);
 
 let scene, camera, renderer;
 let pointGeometry, pointMaterial, points;
@@ -71,7 +79,7 @@ function init() {
   controls.dampingFactor = 0.25; // 阻尼系数
   controls.enableZoom = true; // 启用缩放
   controls.zoomSpeed = 1.0; // 缩放速度
-  controls.enablePan=true;
+  controls.enablePan = true;
 
 }
 
@@ -158,6 +166,25 @@ function addLines(resultIDs) {
   scene.add(citedPointsObject);
 }
 
+function handleVisible() {
+  isVisible.value = !isVisible.value;
+  if (isVisible.value) {
+    if (lines !== undefined) {
+      scene.add(lines);
+    }
+    if (citedPointsObject !== undefined) {
+      scene.add(citedPointsObject);
+    }
+  } else {
+    if (lines !== undefined) {
+      scene.remove(lines);
+    }
+    if (citedPointsObject !== undefined) {
+      scene.remove(citedPointsObject);
+    }
+  }
+
+}
 </script>
 
 <style scoped>
@@ -197,5 +224,11 @@ function addLines(resultIDs) {
   font-style: italic;
   font-size: 16px;
   opacity: 0.5;
+}
+
+.visible-control {
+  position: absolute;
+  bottom: 1%;
+  left: 1%;
 }
 </style>
