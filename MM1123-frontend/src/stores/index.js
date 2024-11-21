@@ -81,11 +81,15 @@ WHERE p1._id = '53e99784b7602d9701f3e151'`
 
     let vectorModalSQL=`SELECT id,pub_year,authors
 from articles
-WHERE pub_year <= 1990 
-and article_id in (select id from A)
+WHERE id=2
+OR id=3
+OR id=4
+OR id=5
+OR id=6
 ORDER BY emd <-> (
-  select emd from target_publication
-)`
+  select emd from articles where id=1
+)
+LIMIT 3`
     let vectorModal = {
       desc:"Vector Modal Example",
       sql:vectorModalSQL,
