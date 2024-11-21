@@ -20,21 +20,15 @@
       <a-dropdown :trigger="['click']">
         <template #overlay>
           <a-menu @click="handleMenuClick">
-            <a-menu-item key="1">
-              <UserOutlined />
-              1st menu item
-            </a-menu-item>
-            <a-menu-item key="2">
-              <UserOutlined />
-              2nd menu item
-            </a-menu-item>
-            <a-menu-item key="3">
-              <UserOutlined />
-              3rd item
+            <!-- 循环渲染savedSQL.savedSQL.length个数组 -->
+            <a-menu-item v-for="i in savedSQL.savedSQL.length" :key="i-1">
+              <CodeOutlined />
+              {{ savedSQL.savedSQL[i-1].desc }}
             </a-menu-item>
           </a-menu>
         </template>
         <a-button>
+          <ConsoleSqlOutlined />
           Saved SQL
           <DownOutlined />
         </a-button>
@@ -48,11 +42,12 @@
 </template>
 
 <script lang="js" setup>
-import { PlayCircleFilled, ImportOutlined, ExportOutlined, SaveOutlined,DownOutlined, SyncOutlined, CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
-import { executionStore } from '@/stores';
+import { PlayCircleFilled, ImportOutlined, ExportOutlined, SaveOutlined,DownOutlined, SyncOutlined, CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined,ConsoleSqlOutlined,CodeOutlined } from '@ant-design/icons-vue';
+import { executionStore,savedSQLStore } from '@/stores';
 import { ref, watch } from 'vue';
 import { executeSQL } from '@/api';
 const execution = executionStore();
+const savedSQL = savedSQLStore();
 
 watch(
   () => execution.status,
@@ -106,6 +101,10 @@ watch(() => execution.status, (newStatus) => {
   }
 }, { immediate: true });
 
+function handleMenuClick(item) {
+  // console.log(item.key)
+  savedSQL.select(item.key)
+}
 
 </script>
 

@@ -49,3 +49,93 @@ export const executionStore = defineStore('execution', {
     }
   },
 })
+
+export const savedSQLStore = defineStore('savedSQL', {
+  // 可能selectedSQLIndex应该为计算属性，因为不能超过数组长度
+  state: () => {
+    let relationModalSQL=`SELECT * 
+FROM articles 
+WHERE article_id = '53e99784b7602d9701f3e151'`
+    let relationModal = {
+      desc:"Relation Modal Example",
+      sql:relationModalSQL,
+    }
+    
+    let graphModalSQL=`SELECT p2._id AS id
+FROM citation_network
+MATCH {(p1: publication)-[c: cites]->(p2: publication)}
+WHERE p1._id in (select article_id from target_publication)`
+
+    let graphModal = {
+      desc:"Graph Modal Example",
+      sql:graphModalSQL,
+    }
+
+    let vectorModalSQL=`SELECT id,pub_year,authors
+from articles
+WHERE pub_year <= 1990 
+and article_id in (select id from A)
+ORDER BY emd <-> (
+  select emd from target_publication
+)`
+    let vectorModal = {
+      desc:"Vector Modal Example",
+      sql:vectorModalSQL,
+    }
+
+    let crossModalSQL=`WITH target_publication as 
+(
+SELECT * 
+FROM articles 
+WHERE article_id = '53e99784b7602d9701f3e151'
+),
+A as 
+(
+SELECT p2._id AS id
+FROM citation_network
+MATCH {(p1: publication)-[c: cites]->(p2: publication)}
+WHERE p1._id in (select article_id from target_publication)
+)
+SELECT id,pub_year,authors
+from articles
+WHERE pub_year <= 1990 
+and article_id in (select id from A)
+ORDER BY emd <-> (
+  select emd from target_publication
+)
+limit 5`
+    let crossModal = {
+      desc:"Cross Modal Example",
+      sql:crossModalSQL,
+    }
+
+    let savedSQL = [relationModal,graphModal,vectorModal,crossModal]
+    
+    return {
+      savedSQL: savedSQL,
+      selectedSQLIndex: 0,
+    }
+  },
+  actions: {
+    add(sqlStr) {
+      this.saveSQL.push(sqlStr)
+    },
+    remove(index) {
+      // 检查index合法性
+      if (index < 0 || index >= this.saveSQL.length) {
+        return;
+      }
+      this.saveSQL.splice(index, 1)
+      // 元素移除后，修改selectedSQLIndex的值，使之不要超过数组长度
+      if (this.selectedSQLIndex >= this.saveSQL.length) {
+        this.selectedSQLIndex = this.saveSQL.length - 1;
+      }
+    },
+    select(index) {
+      this.selectedSQLIndex = index
+    },
+    getCurrentSQL() {
+      return this.savedSQL[this.selectedSQLIndex].sql
+    }
+  },
+})

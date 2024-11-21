@@ -8,7 +8,7 @@
 import * as monaco from 'monaco-editor'
 import { language } from 'monaco-editor/esm/vs/basic-languages/sql/sql'
 import { onMounted, onBeforeUnmount, watch } from 'vue'
-import { executionStore } from '@/stores';
+import { executionStore, savedSQLStore } from '@/stores';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 self.MonacoEnvironment = {
   getWorker(workerId, label) {
@@ -32,33 +32,14 @@ const tables = {}
 // 编辑器的主题设置
 const theme = 'vs-light'
 
-const exampleSQL = `WITH target_publication as 
-(
-SELECT * 
-FROM articles 
-WHERE article_id = '53e99784b7602d9701f3e151'
-),
-A as 
-(
-SELECT p2._id AS id
-FROM citation_network
-MATCH {(p1: publication)-[c: cites]->(p2: publication)}
-WHERE p1._id in (select article_id from target_publication)
-)
-SELECT id,pub_year,authors
-from articles
-WHERE pub_year <= 1990 
-and article_id in (select id from A)
-ORDER BY emd <-> (
-  select emd from target_publication
-)
-limit 5`
+const execution = executionStore()
+const savedSQL = savedSQLStore()
 
 // 组件挂载后创建编辑器实例
 onMounted(() => {
   initAutoCompletion()
   editor = monaco.editor.create(document.getElementById('monacoEditor'), {
-    value: exampleSQL,
+    value: savedSQL.getCurrentSQL(),
     language: 'sql',
     readOnly: false,
     automaticLayout: true,
@@ -160,13 +141,18 @@ function getFieldsSuggest(tableName) {
 
 // 对点击事件的响应，可类似地拓展导入导出的逻辑
 
-const execution = executionStore()
-
 watch(
   () => execution.counter,
   () => {
     execution.run(getValue())
     console.log(execution.currSQL)
+  }
+)
+
+watch(
+  ()=>savedSQL.selectedSQLIndex,
+  ()=>{
+    editor.setValue(savedSQL.getCurrentSQL())
   }
 )
 </script>
