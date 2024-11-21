@@ -36,6 +36,10 @@ export function getEdges(resultIDs){
     for (let i = 0; i < resultIDs.length; i++){
         let startID = resultIDs[i];
         let endIDs = adjList[startID];
+        // 如果endIDs是undefined，则跳过该节点
+        if (endIDs === undefined) {
+            continue;
+        }
         for (let j = 0; j < endIDs.length; j++){
             let endID = endIDs[j];
             let endIndex = endID-1;

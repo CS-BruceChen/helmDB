@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import rawData from '@/data/TestSet_projection.json'
+import idMap from '@/data/idMap.json'
 
 export const executionStore = defineStore('execution', {
   state: () => {
@@ -28,6 +29,13 @@ export const executionStore = defineStore('execution', {
       if (returnedData.status === 'success') {
         // 从returnedData.data中提取每个对象的id属性
         this.currResult = returnedData.data.map(obj => obj.id);
+        // 如果id不是纯数字，则返回一个2-22000的随机整数
+        this.currResult = this.currResult.map(id => {
+          if (isNaN(id)) {
+            return idMap[id];
+          }
+          return id;
+        });
         // 根据id数组，从rawData数组中提取对应位置的对象
         this.currQueryReturns = {
           status: 'success',
@@ -61,10 +69,10 @@ WHERE article_id = '53e99784b7602d9701f3e151'`
       sql:relationModalSQL,
     }
     
-    let graphModalSQL=`SELECT p2._id AS id
-FROM citation_network
-MATCH {(p1: publication)-[c: cites]->(p2: publication)}
-WHERE p1._id in (select article_id from target_publication)`
+    let graphModalSQL=`SELECT p2._id AS id 
+FROM citation_network 
+MATCH {(p1: publication)-[c: cites]->(p2: publication)} 
+WHERE p1._id = '53e99784b7602d9701f3e151'`
 
     let graphModal = {
       desc:"Graph Modal Example",

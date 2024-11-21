@@ -167,23 +167,16 @@ function addLines(resultIDs) {
 }
 
 function handleVisible() {
-  isVisible.value = !isVisible.value;
-  if (isVisible.value) {
-    if (lines !== undefined) {
+  if (lines!== undefined && citedPointsObject!== undefined) {
+    isVisible.value =!isVisible.value;
+    if (isVisible.value) {
       scene.add(lines);
-    }
-    if (citedPointsObject !== undefined) {
       scene.add(citedPointsObject);
-    }
-  } else {
-    if (lines !== undefined) {
+    } else {
       scene.remove(lines);
-    }
-    if (citedPointsObject !== undefined) {
       scene.remove(citedPointsObject);
     }
   }
-
 }
 </script>
 
