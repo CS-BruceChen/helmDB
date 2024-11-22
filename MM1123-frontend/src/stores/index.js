@@ -28,14 +28,9 @@ export const executionStore = defineStore('execution', {
       this.currQueryReturns = returnedData;
       if (returnedData.status === 'success') {
         // 从returnedData.data中提取每个对象的id属性
-        this.currResult = returnedData.data.map(obj => obj.id);
-        // 如果id不是纯数字，则返回一个2-22000的随机整数
-        this.currResult = this.currResult.map(id => {
-          if (isNaN(id)) {
-            return idMap[id];
-          }
-          return id;
-        });
+        console.log(returnedData.data);
+        // 有article_id就提取article_id属性，否则提取id属性
+        this.currResult = returnedData.data.map(obj => obj.hasOwnProperty('article_id')? idMap[obj.article_id] : idMap[obj.id]);
         // 根据id数组，从rawData数组中提取对应位置的对象
         this.currQueryReturns = {
           status: 'success',
@@ -63,31 +58,31 @@ export const savedSQLStore = defineStore('savedSQL', {
   state: () => {
     let relationModalSQL=`SELECT * 
 FROM articles 
-WHERE article_id = '53e99784b7602d9701f3e151'`
+WHERE article_id = '5dc149a33a55acb75f3915ac'`
     let relationModal = {
       desc:"Relation Modal Example",
       sql:relationModalSQL,
     }
     
     let graphModalSQL=`SELECT p2._id AS id 
-FROM citation_network 
+FROM citation 
 MATCH {(p1: publication)-[c: cites]->(p2: publication)} 
-WHERE p1._id = '53e99784b7602d9701f3e151'`
+WHERE p1._id = '5dc149a33a55acb75f3915ac'`
 
     let graphModal = {
       desc:"Graph Modal Example",
       sql:graphModalSQL,
     }
 
-    let vectorModalSQL=`SELECT id,pub_year,authors
+    let vectorModalSQL=`SELECT *
 from articles
-WHERE id=2
-OR id=3
-OR id=4
-OR id=5
-OR id=6
+WHERE article_id='5b3d98a217c44a510f7fe9cb'
+OR article_id='5ff68486d4150a363cbe2ad9'
+OR article_id='5dfb4b0b3a55acc370a5e2f2'
+OR article_id='5db425183a55ac7b041f0edd'
+OR article_id='5e8d92f69fced0a24b64d0b8'
 ORDER BY emd <-> (
-  select emd from articles where id=1
+  select emd from articles where article_id='5dc149a33a55acb75f3915ac'
 )
 LIMIT 3`
     let vectorModal = {
@@ -97,25 +92,32 @@ LIMIT 3`
 
     let crossModalSQL=`WITH target_publication as 
 (
-SELECT * 
-FROM articles 
-WHERE article_id = '53e99784b7602d9701f3e151'
+  SELECT * 
+  FROM articles 
+  WHERE article_id = '5dc149a33a55acb75f3915ac'
 ),
 A as 
 (
-SELECT p2._id AS id
-FROM citation_network
-MATCH {(p1: publication)-[c: cites]->(p2: publication)}
-WHERE p1._id in (select article_id from target_publication)
+  SELECT p2._id AS id
+  FROM citation
+  MATCH {(p1: publication)-[c: cites]->(p2: publication)}
+  WHERE p1._id in (select article_id from target_publication)
+    AND (
+        p2.keywords LIKE '%Crowdsourcing%' OR
+        p2.keywords LIKE '%Crowd computing%' OR 
+        p2.keywords LIKE '%Reinforcement learning%' OR 
+        p2.keywords LIKE '%Deep Reinforcement Learning%' OR 
+        p2.keywords LIKE '%Recommender System%' 
+      )
 )
-SELECT id,pub_year,authors
-from articles
-WHERE pub_year <= 1990 
+SELECT article_id 
+from articles 
+WHERE pub_year >= 2018 
 and article_id in (select id from A)
 ORDER BY emd <-> (
   select emd from target_publication
 )
-limit 5`
+limit 10`
     let crossModal = {
       desc:"Cross Modal Example",
       sql:crossModalSQL,

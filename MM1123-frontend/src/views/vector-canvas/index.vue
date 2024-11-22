@@ -58,7 +58,8 @@ function init() {
   const wd = threeContainer.value.clientWidth;
   const ht = threeContainer.value.clientHeight;
   camera = new THREE.PerspectiveCamera(75, wd / ht, 0.1, 1000);
-  camera.position.z = 2;
+  camera.position.z = 15;
+  camera.position.x=12;
 
   // 设置渲染器
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
