@@ -1,4 +1,4 @@
-import rawData from '@/data/TestSet_projection.json'
+import rawData from '@/data/MergedData_projection.json'
 
 export function getAllPoints() {
     let points=[]

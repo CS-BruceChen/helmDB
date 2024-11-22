@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import rawData from '@/data/TestSet_projection.json'
-import idMap from '@/data/idMap.json'
+import rawData from '@/data/MergedData_projection.json'
+import idMap from '@/data/MergedData_idMap.json'
 
 export const executionStore = defineStore('execution', {
   state: () => {

@@ -1,34 +1,6 @@
-import rawData from '@/data/TestSet_projection.json'
-import rawEdge from '@/data/edge.json'
-import adjList from '@/data/adjacency_list.json'
-import ivAdjList from '@/data/inverted_adjacency_list.json'
-export function getAllEdges() {
-    let linesArray = new Float32Array(rawEdge.length * 6);
-
-    for (let i = 0; i < rawEdge.length; i++) {
-        let startID = rawEdge[i][0];
-        let startIndex = startID-1;
-        let endID = rawEdge[i][1];
-        let endIndex = endID-1;
-
-        let startX = rawData[startIndex]["3DProjection"][0][0];
-        let startY = rawData[startIndex]["3DProjection"][0][1];
-        let startZ = rawData[startIndex]["3DProjection"][0][2];
-
-        let endX = rawData[endIndex]["3DProjection"][0][0];
-        let endY = rawData[endIndex]["3DProjection"][0][1];
-        let endZ = rawData[endIndex]["3DProjection"][0][2];
-
-        linesArray[i * 6] = startX;
-        linesArray[i * 6 + 1] = startY;
-        linesArray[i * 6 + 2] = startZ;
-        linesArray[i * 6 + 3] = endX;
-        linesArray[i * 6 + 4] = endY;
-        linesArray[i * 6 + 5] = endZ;
-    }
-
-    return linesArray;
-}
+import rawData from '@/data/MergedData_projection.json'
+import adjList from '@/data/MergedData_adjList.json'
+import ivAdjList from '@/data/MergedData_inverted_adjList.json'
 
 export function getCitationOutEdges(resultIDs){
     let lines=[]
