@@ -1,5 +1,4 @@
 // @/api/index.js
-import { ref } from 'vue';
 
 // 定义executeSQL函数
 const executeSQL = async (execution) => {
