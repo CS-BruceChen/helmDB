@@ -26,7 +26,7 @@ def execute_sql_file(skip_lines=0):
     """
     执行生成的 SQL 文件，并返回结果字符串，同时支持忽略前 n 行。
     """
-    command = f"/home/wym/HELMDB_dest/bin/gsql -U wym -d tech_demo -p 5432 -f {SQL_FILE_PATH}"
+    command = f"/home/wym/HELMDB_dest/bin/gsql -U wym -d tech_test -p 5432 -f {SQL_FILE_PATH}"
     try:
         result = subprocess.run(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.returncode == 0:
